@@ -40,3 +40,9 @@ case class CellPoint(x: Double, y: Double)
   */
 case class Color(red: Int, green: Int, blue: Int)
 
+case class Station(stn: STN, wban: WBAN)
+
+object Convert{
+  def fToC(d: Double) = round((d - 32) * 5 / 9)
+  private def round(d: Double) = BigDecimal(d).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
+}
