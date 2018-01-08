@@ -15,4 +15,9 @@ class ExtractionTest extends FunSuite {
     val tmp = Extraction.readTemperature("/1975.csv", 1975)
     assert(tmp.collect.size == 2190974)
   }
+
+  test("Temperature values should be matched to locations correctly") {
+    val tmp = Extraction.locateTemperatures(1975, "/stations.csv", "/1975.csv")
+    assert(tmp.size == 2177190)
+  }
 }
