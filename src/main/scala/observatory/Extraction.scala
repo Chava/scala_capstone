@@ -42,11 +42,19 @@ object Extraction {
         case ("", "", _, _) | (_, _, "", _) | (_, _, _, "") => None
         case (stn, wban, lat, lng) => Some((Station(stn, wban), Location(lat.toDouble, lng.toDouble)))
         case _ => None
-
       }
-
     }
-
   }
 
-}
+    def readTemperature(temperatureFile: String, year: Year): RDD[(Station, LocalDate, Temperature)] = {
+      sc.textFile(getClass.getResource(temperatureFile).getPath).flatMap { line =>
+        val str = line.split(",", 5)
+        val pattern = (str(0), str(1), str(2), str(3), str(4))
+        pattern match {
+          case ("", "", _, _, _) | (_, _, "", _, _) | (_, _, _, "", _) | (_, _, _, _, "") => None
+          case (stn, wban, month, day, tmp) => Some((Station(stn, wban), LocalDate.of(year, month.toInt, day.toInt), Convert.fToC(tmp.toDouble)))
+          case _ => None
+        }
+      }
+    }
+  }
