@@ -3,4 +3,5 @@ package object observatory {
   type Year = Int // Calendar year, introduced in Week 1
   type STN = String
   type WBAN = String
+  type PalettePoint = (Temperature, Color)
 }
