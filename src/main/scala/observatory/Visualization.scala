@@ -23,23 +23,21 @@ object Visualization {
     */
   def interpolateColor(points: Iterable[PalettePoint], value: Temperature): Color = {
     val sorted = points.toSeq.sortBy(_._1)
-    if(sorted.head._1.equals(value)) return sorted.head._2
-    if(sorted.last._1.equals(value)) return sorted.last._2
+    if (sorted.head._1 >= value) return sorted.head._2
+    if (sorted.last._1 <= value) return sorted.last._2
 
     val (left: PalettePoint, right: PalettePoint) = sorted.sliding(2).find {
-      t => t(0)._1 < value && t(1)._1 > value
+      t => t(0)._1 <= value && t(1)._1 >= value
     } match {
       case Some(p: Seq[PalettePoint]) => (p(0), p(1))
-      case None => {
-        if (sorted.head._1 > value) (sorted.head, sorted.head) else (sorted.last, sorted.last)
-      }
+      case None => (sorted.head, sorted.last)
     }
     doInterpolate(left, right, value)
   }
 
   def doInterpolate(left: PalettePoint, right: PalettePoint, value: Temperature): Color = {
-    if(left.equals(right) || left._1.equals(value)) return left._2
-    if(right._1.equals(value)) return right._2
+    if (left.equals(right) || left._1.equals(value)) return left._2
+    if (right._1.equals(value)) return right._2
 
     val alpha: Double = (value - left._1) / (right._1 - left._1)
     val red = alpha * (right._2.red - left._2.red) + left._2.red
