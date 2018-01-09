@@ -1,32 +1,47 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
+import scala.math.{acos, cos, pow, sin, Pi, toRadians, atan2, sqrt}
+
+import scala.annotation.tailrec
 
 /**
   * 2nd milestone: basic visualization
   */
 object Visualization {
 
+  val EARTH_RADIUS = 6371
+
   /**
     * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
     * @param location     Location where to predict the temperature
     * @return The predicted temperature at `location`
     */
+
   def predictTemperature(temperatures: Iterable[(Location, Temperature)], location: Location): Temperature = {
-    ???
+    // Inverse distance weighting algorithm
+    // https://en.wikipedia.org/wiki/Inverse_distance_weighting
+
+    val (sl, st) = temperatures.map { case (l, t) =>
+      val dst = distance(l, location)
+      if (dst < 1) return t
+      val w = 1.0 / pow(dst, 4.0)
+      (w * t, w)
+    }.unzip
+    sl.sum / st.sum
   }
 
   def distance(from:Location, to:Location): Int  ={
-    val lt = Math.toRadians(to.lat - from.lat)
-    val ln = Math.toRadians(to.lon - from.lon)
-    val a = Math.sin(lt/2) * Math.sin(lt/2) +
-      (Math.cos(Math.toRadians(from.lat)) *
-        Math.cos(Math.toRadians(to.lat)) *
-        Math.sin(ln/2)* Math.sin(ln/2))
-    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    (6400 * c).toInt
-  }
+    // Great-circle distance
+    // https://en.wikipedia.org/wiki/Great-circle_distance
 
+    val lt = toRadians(to.lat - from.lat)
+    val ln = toRadians(to.lon - from.lon)
+    val a = sin(lt/2) * sin(lt/2) + (cos(toRadians(from.lat)) *
+        cos(toRadians(to.lat)) * sin(ln/2)* sin(ln/2))
+    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    (EARTH_RADIUS * c).toInt
+  }
 
   /**
     * @param points Pairs containing a value and its associated color
