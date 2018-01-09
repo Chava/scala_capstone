@@ -16,6 +16,18 @@ object Visualization {
     ???
   }
 
+  def distance(from:Location, to:Location): Int  ={
+    val lt = Math.toRadians(to.lat - from.lat)
+    val ln = Math.toRadians(to.lon - from.lon)
+    val a = Math.sin(lt/2) * Math.sin(lt/2) +
+      (Math.cos(Math.toRadians(from.lat)) *
+        Math.cos(Math.toRadians(to.lat)) *
+        Math.sin(ln/2)* Math.sin(ln/2))
+    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    (6400 * c).toInt
+  }
+
+
   /**
     * @param points Pairs containing a value and its associated color
     * @param value  The value to interpolate
