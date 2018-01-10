@@ -1,6 +1,7 @@
 package observatory
 
 
+import com.sksamuel.scrimage.Image
 import org.scalatest.FunSuite
 import org.scalatest.prop.Checkers
 
@@ -80,6 +81,21 @@ class VisualizationTest extends FunSuite with Checkers {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0), (Location(-20, -125), 25.0))
     val tmp = Visualization.predictTemperature(data, Location(30, 30))
     assert(~=(tmp, -10, 0.001))
+  }
+
+  test("Visualization test #1") {
+    val tmps = Array((Location(20, 20), 15.0), (Location(70, -100), 0.0))
+    val colors = Array((-40.0, Color(0, 0, 255)), (-10.0, Color(0, 255, 0)), (30.0, Color(255, 0, 0)))
+    val img: Image = Visualization.visualize(tmps, colors)
+    assert(img.pixel(10, 160).toColor.toInt == -8617216)
+    assert(img.pixel(50, 50).toColor.toInt == -12534016)
+  }
+
+  test("Visualization test #2") {
+    val tmps = Array((Location(20, 20), 15.0), (Location(70, -100), 0.0), (Location(60, 30), -10.0))
+    val colors = Array((-40.0, Color(0, 0, 255)), (-10.0, Color(0, 255, 0)), (30.0, Color(255, 0, 0)))
+    val img: Image = Visualization.visualize(tmps, colors)
+    assert(img.pixel(0, 0).toColor.toInt == -13186816)
   }
 
   private def ~=(x: Double, y: Double, precision: Double) = {

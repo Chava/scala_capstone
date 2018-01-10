@@ -1,9 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import scala.math.{acos, cos, pow, sin, Pi, toRadians, atan2, sqrt}
-
-import scala.annotation.tailrec
+import scala.math.{cos, pow, sin, toRadians, atan2, sqrt}
 
 /**
   * 2nd milestone: basic visualization
@@ -11,6 +9,8 @@ import scala.annotation.tailrec
 object Visualization {
 
   val EARTH_RADIUS = 6371
+  val WIDTH = 360
+  val HEIGHT = 180
 
   /**
     * @param temperatures Known temperatures: pairs containing a location and the temperature at this location
@@ -78,9 +78,17 @@ object Visualization {
     * @param colors       Color scale
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
-  def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-    ???
+  def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[PalettePoint]): Image = {
+    val img = new Array[Pixel](WIDTH * HEIGHT)
+    for (x <- 0 until WIDTH) {
+      for (y <- 0 until HEIGHT) {
+        val (lat, lng) = (90 - y, x - 180)
+        val tmp = predictTemperature(temperatures, Location(lat, lng))
+        val color = interpolateColor(colors, tmp)
+        img(y * WIDTH + x) = Pixel.apply(color.red, color.green, color.blue, 255)
+      }
+    }
+    Image(WIDTH, HEIGHT, img)
   }
-
 }
 
