@@ -2,10 +2,13 @@ package observatory
 
 
 import com.sksamuel.scrimage.Image
+import org.scalactic.TolerantNumerics
 import org.scalatest.FunSuite
 import org.scalatest.prop.Checkers
 
 class VisualizationTest extends FunSuite with Checkers {
+  val e = 1e-3f
+  implicit val eq = TolerantNumerics.tolerantDoubleEquality(e)
 
   test("Color values should be calculated correctly #1") {
     val colors: Iterable[(Temperature, Color)] = Array((-20.0, Color(0, 0, 255)), (10.0, Color(50, 50, 100)))
@@ -50,37 +53,37 @@ class VisualizationTest extends FunSuite with Checkers {
   test("Temperature prediction #1") {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0))
     val tmp = Visualization.predictTemperature(data, Location(40, 40))
-    assert(~=(tmp, 4.238, 0.001))
+    assert(tmp === 4.238)
   }
 
   test("Temperature prediction #2") {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0))
     val tmp = Visualization.predictTemperature(data, Location(50, 50))
-    assert(~=(tmp, 4.949, 0.001))
+    assert(tmp === 4.949)
   }
 
   test("Temperature prediction #3") {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0), (Location(0, 0), 30.0))
     val tmp = Visualization.predictTemperature(data, Location(25, -40))
-    assert(~=(tmp, 18.378, 0.001))
+    assert(tmp === 18.378)
   }
 
   test("Temperature prediction #4") {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0), (Location(-20, -125), 25.0))
     val tmp = Visualization.predictTemperature(data, Location(0, 0))
-    assert(~=(tmp, -6.888, 0.001))
+    assert(tmp === -6.888)
   }
 
   test("Temperature prediction #5") {
     val data = Array((Location(-90, 0), -50.0), (Location(90, 180), -50.0))
     val tmp = Visualization.predictTemperature(data, Location(42, -14))
-    assert(~=(tmp, -50, 0.001))
+    assert(tmp === -50.0)
   }
 
   test("Temperature prediction #6") {
     val data = Array((Location(30, 30), -10.0), (Location(45, 45), 5.0), (Location(-20, -125), 25.0))
     val tmp = Visualization.predictTemperature(data, Location(30, 30))
-    assert(~=(tmp, -10, 0.001))
+    assert(tmp === -10.0)
   }
 
   test("Visualization test #1") {
@@ -96,9 +99,5 @@ class VisualizationTest extends FunSuite with Checkers {
     val colors = Array((-40.0, Color(0, 0, 255)), (-10.0, Color(0, 255, 0)), (30.0, Color(255, 0, 0)))
     val img: Image = Visualization.visualize(tmps, colors)
     assert(img.pixel(0, 0).toColor.toInt == -13186816)
-  }
-
-  private def ~=(x: Double, y: Double, precision: Double) = {
-    if ((x - y).abs < precision) true else false
   }
 }

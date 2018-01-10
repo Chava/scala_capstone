@@ -1,11 +1,26 @@
 package observatory
 
+import org.scalactic.TolerantNumerics
+import org.scalactic.TripleEquals._
+
 /**
   * Introduced in Week 1. Represents a location on the globe.
+  *
   * @param lat Degrees of latitude, -90 ≤ lat ≤ 90
   * @param lon Degrees of longitude, -180 ≤ lon ≤ 180
   */
-case class Location(lat: Double, lon: Double)
+case class Location(lat: Double, lon: Double) {
+  val e = 1e-3f
+  implicit val eq = TolerantNumerics.tolerantDoubleEquality(e)
+
+  override def equals(obj: scala.Any): Boolean = {
+    if (!obj.isInstanceOf[Location]) false
+    else {
+      val loc = obj.asInstanceOf[Location]
+      loc.lat === lat && loc.lon == lon
+    }
+  }
+}
 
 /**
   * Introduced in Week 3. Represents a tiled web map tile.
