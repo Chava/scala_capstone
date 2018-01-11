@@ -1,7 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import scala.math.{cos, pow, sin, toRadians, atan2, sqrt}
+import scala.math.{cos, pow, sin, toRadians, atan2, sqrt, round}
 
 /**
   * 2nd milestone: basic visualization
@@ -31,14 +31,14 @@ object Visualization {
     sl.sum / st.sum
   }
 
-  def distance(from:Location, to:Location): Int  ={
+  def distance(from: Location, to: Location): Int = {
     // Great-circle distance
     // https://en.wikipedia.org/wiki/Great-circle_distance
 
     val lt = toRadians(to.lat - from.lat)
     val ln = toRadians(to.lon - from.lon)
-    val a = sin(lt/2) * sin(lt/2) + (cos(toRadians(from.lat)) *
-        cos(toRadians(to.lat)) * sin(ln/2)* sin(ln/2))
+    val a = sin(lt / 2) * sin(lt / 2) + (cos(toRadians(from.lat)) *
+      cos(toRadians(to.lat)) * sin(ln / 2) * sin(ln / 2))
     val c = 2 * atan2(sqrt(a), sqrt(1 - a))
     (EARTH_RADIUS * c).toInt
   }
@@ -70,7 +70,7 @@ object Visualization {
     val red = alpha * (right._2.red - left._2.red) + left._2.red
     val green = alpha * (right._2.green - left._2.green) + left._2.green
     val blue = alpha * (right._2.blue - left._2.blue) + left._2.blue
-    Color(math.round(red).toInt, math.round(green).toInt, math.round(blue).toInt)
+    Color(red, green, blue)
   }
 
   /**
