@@ -1,7 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import scala.math.{cos, pow, sin, toRadians, atan2, sqrt, round}
+import scala.math.{cos, pow, sin, toRadians, atan2, sqrt}
 
 /**
   * 2nd milestone: basic visualization
@@ -80,13 +80,11 @@ object Visualization {
     */
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[PalettePoint]): Image = {
     val img = new Array[Pixel](WIDTH * HEIGHT)
-    for (x <- 0 until WIDTH) {
-      for (y <- 0 until HEIGHT) {
+    for (x <- 0 until WIDTH; y <- 0 until HEIGHT) {
         val (lat, lng) = (90 - y, x - 180)
         val tmp = predictTemperature(temperatures, Location(lat, lng))
         val color = interpolateColor(colors, tmp)
         img(y * WIDTH + x) = Pixel.apply(color.red, color.green, color.blue, 255)
-      }
     }
     Image(WIDTH, HEIGHT, img)
   }
