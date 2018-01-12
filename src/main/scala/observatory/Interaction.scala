@@ -2,7 +2,7 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 
-import scala.math.{Pi, atan, pow, sinh}
+import scala.math.{Pi, atan, pow, sinh, log10}
 import scala.concurrent.{Await, Future, ExecutionContext}
 import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
@@ -12,8 +12,7 @@ import ExecutionContext.Implicits.global
   */
 object Interaction {
 
-  val IMG_WIDTH = 256
-  val IMG_HEIGHT = 256
+  val IMG_WIDTH, IMG_HEIGHT = 256
 
   /**
     * @param tile Tile coordinates
@@ -27,9 +26,11 @@ object Interaction {
   }
 
   def tileAllLocations(tile: Tile): Array[Location] = {
+    val extraZoom = (log10(IMG_WIDTH) / log10(2.0)).toInt
     val locationsMap = new Array[Location](IMG_WIDTH * IMG_HEIGHT)
     for (y <- 0 until IMG_HEIGHT; x <- 0 until IMG_WIDTH) {
-      locationsMap(y * IMG_HEIGHT + x) = tileLocation(Tile(256 * tile.x + x, 256 * tile.y + y, tile.zoom + 8))
+      locationsMap(y * IMG_HEIGHT + x) =
+        tileLocation(Tile(IMG_WIDTH * tile.x + x, IMG_HEIGHT * tile.y + y, tile.zoom + extraZoom))
     }
     locationsMap
   }
@@ -60,7 +61,7 @@ object Interaction {
 
     val tasks = for {
       (year, data) <- yearlyData
-      zoom <- 0 until 4
+      zoom <- 0 to 3
       y <- 0 until pow(2, zoom).toInt
       x <- 0 until pow(2, zoom).toInt
     } yield Future {
