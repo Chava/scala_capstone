@@ -1,8 +1,11 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import scala.math.{Pi, atan, pow, sinh}
 
+import scala.math.{Pi, atan, pow, sinh}
+import scala.concurrent.{Await, Future, ExecutionContext}
+import scala.concurrent.duration._
+import ExecutionContext.Implicits.global
 
 /**
   * 3rd milestone: interactive visualization
@@ -38,9 +41,9 @@ object Interaction {
     * @return A 256×256 image showing the contents of the given tile
     */
   def tile(temperatures: Iterable[(Location, Temperature)], colors: Iterable[PalettePoint], tileObj: Tile): Image = {
-    val tmps = tileAllLocations(tileObj).map {l => Visualization.predictTemperature(temperatures, l)}
-    val pixels = tmps.map {t => Visualization.interpolateColor(colors, t)}
-    val img = pixels.map { p => Pixel.apply(p.red, p.green, p.blue, 127)}
+    val tmps = tileAllLocations(tileObj).map { l => Visualization.predictTemperature(temperatures, l) }
+    val pixels = tmps.map { t => Visualization.interpolateColor(colors, t) }
+    val img = pixels.map { p => Pixel.apply(p.red, p.green, p.blue, 127) }
     Image(IMG_WIDTH, IMG_HEIGHT, img)
   }
 
@@ -52,11 +55,17 @@ object Interaction {
     * @param generateImage Function that generates an image given a year, a zoom level, the x and
     *                      y coordinates of the tile and the data to build the image from
     */
-  def generateTiles[Data](
-                           yearlyData: Iterable[(Year, Data)],
-                           generateImage: (Year, Tile, Data) => Unit
-                         ): Unit = {
-    ???
-  }
+  def generateTiles[Data](yearlyData: Iterable[(Year, Data)],
+                          generateImage: (Year, Tile, Data) => Unit): Unit = {
 
+    val tasks = for {
+      (year, data) <- yearlyData
+      zoom <- 0 until 4
+      y <- 0 until pow(2, zoom).toInt
+      x <- 0 until pow(2, zoom).toInt
+    } yield Future {
+      generateImage(year, Tile(x, y, zoom), data)
+    }
+    Await.result(Future.sequence(tasks), Duration.Inf)
+  }
 }
