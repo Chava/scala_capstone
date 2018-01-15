@@ -1,5 +1,7 @@
 package observatory
 
+import scala.math.{abs}
+
 /**
   * 4th milestone: value-added information
   */
@@ -30,9 +32,7 @@ object Manipulation {
     * @return A grid containing the deviations compared to the normal temperatures
     */
   def deviation(temperatures: Iterable[(Location, Temperature)], normals: GridLocation => Temperature): GridLocation => Temperature = {
-    ???
+    (grid: GridLocation) => makeGrid(temperatures)(grid) - normals(grid)
   }
-
-
 }
 
