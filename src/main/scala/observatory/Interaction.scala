@@ -26,7 +26,7 @@ object Interaction {
   }
 
   def tileAllLocations(tile: Tile): Array[Location] = {
-    val extraZoom = (log10(IMG_WIDTH) / log10(2.0)).toInt
+    val extraZoom = (log10(IMG_WIDTH) / log10(2.0)).toInt // extraZoom = 8
     val locationsMap = new Array[Location](IMG_WIDTH * IMG_HEIGHT)
     for (y <- 0 until IMG_HEIGHT; x <- 0 until IMG_WIDTH) {
       locationsMap(y * IMG_HEIGHT + x) =

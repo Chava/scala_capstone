@@ -40,7 +40,13 @@ case class Tile(x: Int, y: Int, zoom: Int)
   * @param lat Circle of latitude in degrees, -89 ≤ lat ≤ 90
   * @param lon Line of longitude in degrees, -180 ≤ lon ≤ 179
   */
-case class GridLocation(lat: Int, lon: Int)
+case class GridLocation(lat: Int, lon: Int) {
+  def this(location: Location) = this(location.lat.toInt, location.lon.toInt)
+}
+
+object GridLocation {
+  def apply(location: Location) = new GridLocation(location)
+}
 
 /**
   * Introduced in Week 5. Represents a point inside of a grid cell.
