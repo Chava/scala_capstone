@@ -17,7 +17,7 @@ object Interaction2 {
     * @return A signal containing the year bounds corresponding to the selected layer
     */
   def yearBounds(selectedLayer: Signal[Layer]): Signal[Range] = {
-    ???
+    Signal(selectedLayer().bounds)
   }
 
   /**
@@ -28,9 +28,14 @@ object Interaction2 {
     *         this method should return the closest value that is included
     *         in the `selectedLayer` bounds.
     */
-  def yearSelection(selectedLayer: Signal[Layer], sliderValue: Signal[Year]): Signal[Year] = {
-    ???
-  }
+  def yearSelection(selectedLayer: Signal[Layer], sliderValue: Signal[Year]): Signal[Year] = Signal({
+    val bounds = selectedLayer().bounds
+    sliderValue() match {
+      case it if bounds contains it => it
+      case it if bounds.last < it => bounds.last
+      case _ => bounds.head
+    }
+  })
 
   /**
     * @param selectedLayer The selected layer
@@ -38,7 +43,7 @@ object Interaction2 {
     * @return The URL pattern to retrieve tiles
     */
   def layerUrlPattern(selectedLayer: Signal[Layer], selectedYear: Signal[Year]): Signal[String] = {
-    ???
+    Signal(s"generated/${selectedLayer().layerName.id}/${selectedYear()}/{z}/{x}/{y}.png")
   }
 
   /**
